@@ -1,0 +1,7 @@
+let getHomePage = (rep, res) => {
+    return res.render('homepage.ejs')
+}
+
+module.exports = {
+    getHomePage: getHomePage,
+}
