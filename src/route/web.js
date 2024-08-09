@@ -6,6 +6,7 @@ let router = express.Router();
 let initWebRoutes = (app) => {
     router.get('/', homeController.getHomePage);
     router.get('/crud', homeController.getCRUD);
+    router.get('/get-crud', homeController.getDataCRUD);
     router.post('/post-crud', homeController.postCRUD);
     
     // router.get('/hoidanit', (rep, res) => {
