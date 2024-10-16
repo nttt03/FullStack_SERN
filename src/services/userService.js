@@ -112,7 +112,7 @@ let createNewUser = (data) => {
             if(check === true) {
                 resolve({
                     errCode: 1,
-                    message: 'Your email is already in used, pls try another email!'
+                    errMessage: 'Your email is already in used, pls try another email!'
                 });
             }
             else {
@@ -129,7 +129,7 @@ let createNewUser = (data) => {
             })
             resolve({
                 errCode: 0,
-                message: 'OK'
+                errMessage: 'OK'
             });
             }
            
@@ -155,10 +155,10 @@ let deleteUser = (userId) => {
        }
 
        await user.destroy();
-       resolve({
-        errCode: 0,
-        message: `Delete user success`
-    })
+        resolve({
+            errCode: 0,
+            errMessage: `Delete user success`
+        })
     })
 }
 
@@ -168,7 +168,7 @@ let updateUserData = (data) => {
             if(!data.id) {
                 resolve({
                     errCode: 2,
-                    message: 'Missing required id parameter'
+                    errMessage: 'Missing required id parameter'
                 });
             }
             let user = await db.User.findOne({
@@ -185,12 +185,12 @@ let updateUserData = (data) => {
 
                 resolve({
                     errCode: 0,
-                    message: 'Update user success'
+                    errMessage: 'Update user success'
                 });
             } else {
                 resolve({
                     errCode: 1,
-                    message: 'User not found!'
+                    errMessage: 'User not found!'
                 });
             }
 
