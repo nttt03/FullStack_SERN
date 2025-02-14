@@ -22,6 +22,8 @@ let initWebRoutes = (app) => {
     router.get("/api/allcode", userController.getAllCode);
 
     router.get("/api/top-doctor-home", doctorController.getTopDoctorHome);
+    router.get("/api/get-all-doctor", doctorController.getGetAllDoctor);
+    router.post("/api/save-infor-doctor", doctorController.postInforDoctor);
     
     // router.get('/hoidanit', (rep, res) => {
     //     return res.send("Hế lô hoidanit ^_^ !")
