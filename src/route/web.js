@@ -7,7 +7,6 @@ let router = express.Router();
 let initWebRoutes = (app) => {
     router.get('/', homeController.getHomePage);
     router.get('/crud', homeController.getCRUD);
-
     router.post('/post-crud', homeController.postCRUD);
     router.get('/get-crud', homeController.getDataCRUD);
     router.get('/edit-crud', homeController.getEditCRUD);
@@ -24,6 +23,7 @@ let initWebRoutes = (app) => {
     router.get("/api/top-doctor-home", doctorController.getTopDoctorHome);
     router.get("/api/get-all-doctor", doctorController.getGetAllDoctor);
     router.post("/api/save-infor-doctor", doctorController.postInforDoctor);
+    router.get("/api/get-detail-doctor-by-id", doctorController.getDetailDoctorById);
     
     // router.get('/hoidanit', (rep, res) => {
     //     return res.send("Hế lô hoidanit ^_^ !")
