@@ -16,7 +16,15 @@ let sendSimpleEmail = async (dataSend) => {
         from: '"BookingCare.com 👻" <thanhthao.thptqt@gmail.com>', // sender address
         to: dataSend.receiverEmail, // list of receivers
         subject: "Thông tin đặt lịch khám bệnh", // Subject line
-        html: `
+        html: getBodyHTMLEmail(dataSend), // html body
+    });
+    // console.log('dataSend >>>: ', dataSend);
+}
+
+let getBodyHTMLEmail = (dataSend) => {
+    let result = '';    
+    if (dataSend.language === 'vi') {
+        result = `
             <div style="font-family: Arial, sans-serif; line-height: 1.6; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
                 <h2 style="color: #2c3e50;">Xin chào ${dataSend.patientName},</h2>
                 <p>Cảm ơn bạn đã đặt lịch hẹn khám bệnh tại <strong>BookingCare.com 👻</strong>.</p>
@@ -34,8 +42,31 @@ let sendSimpleEmail = async (dataSend) => {
                 <hr style="border: none; border-top: 1px solid #ddd;">
                 <p style="color: #777; font-size: 14px;">Mọi thắc mắc vui lòng liên hệ <strong>BookingCare.com 👻</strong> qua email hoặc số điện thoại.</p>
             </div>
-        `, // html body
-      });
+        `
+    }
+    if (dataSend.language === 'en') {
+        result = `
+            <div style="font-family: Arial, sans-serif; line-height: 1.6; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
+                <h2 style="color: #2c3e50;">Hello ${dataSend.patientName},</h2>
+                <p>Thank you for booking your medical appointment at <strong>BookingCare.com 👻</strong>.</p>
+                <p>Appointment details:</p>
+                <p>Time: ${dataSend.time}</p>
+                <p>Doctor: ${dataSend.doctorName}</p>
+                <p>To complete your booking, please confirm your appointment by clicking the button below:</p>
+                <div style="text-align: center; margin: 20px 0;">
+                    <a href=${dataSend.redirectLink} target="_blank"
+                        style="background-color: #28a745; color: #fff; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-size: 16px;">
+                        Confirm Appointment
+                    </a>
+                </div>
+                <p style="font-style: italic;">If you did not request this appointment, please ignore this email. Thank you!</p>
+                <hr style="border: none; border-top: 1px solid #ddd;">
+                <p style="color: #777; font-size: 14px;">For any inquiries, please contact <strong>BookingCare.com 👻</strong> via email or phone.</p>
+            </div>
+
+        `
+    }
+    return result;
 }
 
 

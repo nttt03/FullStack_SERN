@@ -6,7 +6,7 @@ require('dotenv').config();
 let postBookApointment = (data) => {
     return new Promise(async (resolve, reject) => {
         try {
-            if (!data.email || !data.doctorId || !data.date || !data.timeType) {
+            if (!data.email || !data.doctorId || !data.date || !data.timeType || !data.fullName) {
                 resolve({
                     errCode: 1,
                     errMessage: 'Missing parameter...'
@@ -15,9 +15,10 @@ let postBookApointment = (data) => {
                 // gửi mail
                 await emailService.sendSimpleEmail({
                     receiverEmail: data.email,
-                    patientName: 'Anh Hào',
-                    time: '8:00 - 9:00 Chủ nhật 1/12/2025',
-                    doctorName: 'Bác sĩ Tuyến',
+                    patientName: data.fullName,
+                    time: data.timeString,
+                    doctorName: data.doctorName,
+                    language: data.language,
                     redirectLink: 'https://github.com/nttt03'
                 });
 
