@@ -1,7 +1,13 @@
 import { where } from 'sequelize';
 import db from '../models/index';
 import emailService from '../services/emailService';
+import { v4 as uuidv4 } from 'uuid';
 require('dotenv').config();
+
+let buildUrlEmail = (doctorId, token) => {
+    let result = `${process.env.URL_REACT}/veryfy-booking?token=${token}&doctorId=${doctorId}`
+    return result;
+}
 
 let postBookApointment = (data) => {
     return new Promise(async (resolve, reject) => {
@@ -12,6 +18,7 @@ let postBookApointment = (data) => {
                     errMessage: 'Missing parameter...'
                 })
             } else {
+                let token = uuidv4(); // 1e8fbb8b-cd0a-4a9f-bda6-24a508bb43f8
                 // gửi mail
                 await emailService.sendSimpleEmail({
                     receiverEmail: data.email,
@@ -19,7 +26,7 @@ let postBookApointment = (data) => {
                     time: data.timeString,
                     doctorName: data.doctorName,
                     language: data.language,
-                    redirectLink: 'https://github.com/nttt03'
+                    redirectLink: buildUrlEmail(data.doctorId, token)
                 });
 
                 // upsert patient
@@ -45,6 +52,7 @@ let postBookApointment = (data) => {
                             patientId: user[0].id,
                             date: data.date,
                             timeType: data.timeType,
+                            token: token
                         }
                         
                     })
@@ -61,6 +69,49 @@ let postBookApointment = (data) => {
     })
 }
 
+let postVerifyBookApointment = (data) => {
+    return new Promise(async(resolve, reject) => {
+        try {
+            if (!data.token || !data.doctorId) {
+                resolve({
+                    errCode: 1,
+                    errMessage: 'Missing required parameters',
+                })
+            } else {
+                let appointment = await db.Booking.findOne({
+                    where: {
+                        token: data.token,
+                        doctorId: data.doctorId,
+                        statusId: 'S1'
+                    },
+                    // để raw: false (nó sẽ trả ra 1 sequelize object) thì mới dùng được hàm update (appointment.save())
+                    // trong file config.json để raw: true (nó sẽ trả ra 1 object của javascript)
+                    raw: false
+                })
+
+                if (appointment) {
+                    // update status (gán dl trước r mới dùng được hàm update)
+                    appointment.statusId = 'S2'
+                    await appointment.save()
+                    
+                    resolve({
+                        errCode: 0,
+                        errMessage: 'Xác nhận lịch hẹn thành công!',
+                    })
+                } else {
+                    resolve({
+                        errCode: 2,
+                        errMessage: 'Lịch hẹn đã được xác nhận hoặc không tồn tại!',
+                    })
+                }
+            }
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
 module.exports = {
-    postBookApointment: postBookApointment
+    postBookApointment: postBookApointment,
+    postVerifyBookApointment: postVerifyBookApointment
 }
