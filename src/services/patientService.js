@@ -1,11 +1,10 @@
-import { where } from 'sequelize';
 import db from '../models/index';
 import emailService from '../services/emailService';
 import { v4 as uuidv4 } from 'uuid';
 require('dotenv').config();
 
 let buildUrlEmail = (doctorId, token) => {
-    let result = `${process.env.URL_REACT}/veryfy-booking?token=${token}&doctorId=${doctorId}`
+    let result = `${process.env.URL_REACT}/verify-booking?token=${token}&doctorId=${doctorId}`
     return result;
 }
 
