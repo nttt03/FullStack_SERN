@@ -1,3 +1,4 @@
+import { includes } from 'lodash';
 import db from '../models/index';
 import emailService from '../services/emailService';
 import { v4 as uuidv4 } from 'uuid';
@@ -47,7 +48,12 @@ let postBookApointment = (data) => {
                 // create a booking record
                 if (user && user[0]) {
                     await db.Booking.findOrCreate({
-                        where: { patientId: user[0].id },
+                        where: { 
+                            patientId: user[0].id,
+                            doctorId: data.doctorId,
+                            date: data.date,
+                            timeType: data.timeType
+                        },
                         defaults: {
                             statusId: 'S1',
                             doctorId: data.doctorId,
@@ -113,7 +119,109 @@ let postVerifyBookApointment = (data) => {
     })
 }
 
+let getNewAppointment = (inputId) => {
+    return new Promise(async(resolve, reject) =>{
+        try {
+            if (!inputId) {
+                resolve({
+                    errCode: 1,
+                    errMessage: 'Missing required parameters patientId',
+                })
+            } else {
+                let appointments = await db.Booking.findAll({
+                    where: {
+                        patientId: inputId,
+                        statusId: { [db.Sequelize.Op.in]: ['S1', 'S2'] } // Lọc statusId là 'S1' hoặc 'S2'
+                    },
+                    attributes: ['statusId', 'patientId', 'date', 'timeType'],
+                    include: [
+                        { 
+                            model: db.Doctor_Infor, 
+                            as: 'doctorInfoData',
+                            attributes: ['doctorId', 'addressClinic', 'nameClinic', 'priceId'],
+                            include: [
+                                { model: db.Allcode, as: 'priceTypeData', attributes: ['valueEn', 'valueVi'] }
+                            ]
+                        },
+                        {
+                            model: db.User,
+                            as: 'infoDataDoctor',
+                            attributes: ['firstName', 'lastName'],
+                            include: [
+                                { model: db.Allcode, as: 'positionData', attributes: ['valueEn', 'valueVi'] }
+                            ]
+                        },
+                        { model: db.Allcode, as: 'timeTypeDataPatient', attributes: ['valueEn', 'valueVi'] },
+                        { model: db.Allcode, as: 'statusData', attributes: ['valueEn', 'valueVi'] }
+                    ],
+                    raw: true,
+                    nest: true,
+                })
+                resolve({
+                    errCode: 0,
+                    dataAppointments: appointments
+                })
+            }
+            
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
+let getDoneAppointment = (inputId) => {
+    return new Promise(async(resolve, reject) =>{
+        try {
+            if (!inputId) {
+                resolve({
+                    errCode: 1,
+                    errMessage: 'Missing required parameters patientId',
+                })
+            } else {
+                let appointments = await db.Booking.findAll({
+                    where: {
+                        patientId: inputId,
+                        statusId: 'S3'
+                    },
+                    attributes: ['statusId', 'patientId', 'date', 'timeType'],
+                    include: [
+                        { 
+                            model: db.Doctor_Infor, 
+                            as: 'doctorInfoData',
+                            attributes: ['doctorId', 'addressClinic', 'nameClinic', 'priceId'],
+                            include: [
+                                { model: db.Allcode, as: 'priceTypeData', attributes: ['valueEn', 'valueVi'] }
+                            ]
+                        },
+                        {
+                            model: db.User,
+                            as: 'infoDataDoctor',
+                            attributes: ['firstName', 'lastName'],
+                            include: [
+                                { model: db.Allcode, as: 'positionData', attributes: ['valueEn', 'valueVi'] }
+                            ]
+                        },
+                        { model: db.Allcode, as: 'timeTypeDataPatient', attributes: ['valueEn', 'valueVi'] },
+                        { model: db.Allcode, as: 'statusData', attributes: ['valueEn', 'valueVi'] }
+                    ],
+                    raw: true,
+                    nest: true,
+                })
+                resolve({
+                    errCode: 0,
+                    dataAppointments: appointments
+                })
+            }
+            
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
 module.exports = {
     postBookApointment: postBookApointment,
-    postVerifyBookApointment: postVerifyBookApointment
+    postVerifyBookApointment: postVerifyBookApointment,
+    getNewAppointment: getNewAppointment,
+    getDoneAppointment: getDoneAppointment
 }

@@ -5,6 +5,7 @@ import doctorController from "../controllers/doctorController";
 import patientController from "../controllers/patientController";
 import specialtyController from "../controllers/specialtyController";
 import clinicController from "../controllers/clinicController";
+import chatbotController  from "../controllers/chatbotController";
 let router = express.Router();
 
 let initWebRoutes = (app) => {
@@ -46,6 +47,13 @@ let initWebRoutes = (app) => {
     router.post("/api/create-new-clinic", clinicController.createClinic);
     router.get("/api/get-all-clinic", clinicController.getAllClinic);
     router.get("/api/get-detail-clinic-by-id", clinicController.getDetailClinicById);
+
+    /////////////
+
+    router.get("/api/get-new-appointment", patientController.getNewAppointment);
+    router.get("/api/get-done-appointment", patientController.getDoneAppointment);
+
+    router.post('/api/chat', chatbotController.handleChat);
     
     // router.get('/hello', (rep, res) => {
     //     return res.send("Hế lô world ^_^ !")
